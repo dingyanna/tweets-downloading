@@ -1,5 +1,0 @@
-search_tweets_api:
-  account_type: premium
-  endpoint: "url"
-  consumer_key: "apikey"
-  consumer_secret: "secretkey"
