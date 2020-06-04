@@ -5,10 +5,10 @@ import pandas as pd
     
 if __name__ == '__main__':
     
-    consumer_key= 'homQ49cOTkr2ha90NWqrWE8Vi'
-    consumer_secret= 'K3dv1ntjfWf4xQp5yeYb5APWcTlR3CJbnd3fHavMBAgPthKaq7'
-    access_token= '1264991313725992962-6SkX7CPZrOaC3ZFwJzAEgvKgyI5InE'
-    access_token_secret= 'dmhQ5GoCCfA02YBOO7Bn6M4ltYQO2mzMPvzAyrKsMybSe'
+    consumer_key= 'api key'
+    consumer_secret= 'api secret key'
+    access_token= 'access token'
+    access_token_secret= 'access token secret'
     auth = tp.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     api = tp.API(auth, wait_on_rate_limit=True)
