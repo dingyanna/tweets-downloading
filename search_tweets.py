@@ -1,16 +1,58 @@
-from searchtweets import gen_rule_payload, load_credentials, collect_results
+import os
+import tweepy as tp
+import pandas as pd
 
-
-def main():
-    premium_search_args = load_credentials("./twitter_keys.yaml",
-                                       yaml_key="search_tweets_api",
-                                       env_overwrite=False)
-
-    rule = gen_rule_payload("#WhiteLivesMatter", results_per_call=100)
-    tweets = collect_results(rule,
-                            result_stream_args=premium_search_args)
-    [print(tweet.all_text, end='\n\n') for tweet in tweets[0:10]]
     
 if __name__ == '__main__':
-    while True:
-        main()
+    
+    consumer_key= 'api key'
+    consumer_secret= 'api secret key'
+    access_token= 'access token'
+    access_token_secret= 'access token secret'
+    auth = tp.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
+    api = tp.API(auth, wait_on_rate_limit=True)
+    
+    search_words = "#BlueLivesMatter OR #BlueLivesMatters OR #WhiteLivesMatter"\
+                    " OR #whiteoutwednesday OR #whiteoutwednsday"
+    date_since = "2020-05-21"
+    
+    tweets = tp.Cursor(api.search,
+              q=search_words,
+              lang="en",
+              since=date_since).items(1000)
+    
+    
+    expanded_tweets = [[tweet.user.screen_name, 
+                        tweet.id,
+                        tweet.user.id,
+                        tweet.text, 
+                        tweet.user.location, 
+                        tweet.created_at,
+                        tweet.favorite_count,
+                        tweet.retweet_count,
+                        tweet.user.followers_count,
+                        "\n".join([media["media_url"] for media in\
+                            tweet.extended_entities["media"]])\
+                            if (hasattr(tweet, "extended_entities")) and \
+                            ("media" in tweet.extended_entities) else "",
+                        tweet.lang
+                        ] for tweet in tweets]
+    
+    tweets_info = pd.DataFrame(data=expanded_tweets, 
+                            columns=["user_name", 
+                                    "tweet_id",
+                                    "user_id",
+                                    "text", 
+                                    "location",
+                                    "creation_time", 
+                                    "favorite_count",
+                                    "retweet_count",
+                                    "followers_count",
+                                    "media_url",
+                                    "language"
+                                    ])
+    
+    tweets_info = tweets_info.sort_values(by=["favorite_count", "retweet_count"])
+
+    tweets_info.to_csv("data.csv")
