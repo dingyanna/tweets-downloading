@@ -53,6 +53,7 @@ if __name__ == '__main__':
                                     "language"
                                     ])
     
-    tweets_info = tweets_info.sort_values(by=["favorite_count", "retweet_count"])
+    tweets_info = tweets_info.sort_values(by=["favorite_count", \
+                    "retweet_count", "followers_count"], ascending=False)
 
-    tweets_info.to_csv("data.csv")
+    tweets_info.to_csv("data.csv", index=False)
