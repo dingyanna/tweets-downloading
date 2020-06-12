@@ -60,9 +60,9 @@ def hydrate_ids(keys, mon):
             "2020-%s/coronavirus-tweet-id-2020-%s-%s-*.txt" \
             % (mon_str, mon_str, day_str)
         process_path(path)
-
-        # process dataset 2 for months after February
+        
         if mon > 2:
+            # process dataset 2 for months after February
             base_dir_B = "/home/zarif/projects/covid19_twitter/"
             path = base_dir_B + \
             "dailies/2020-%s-%s/2020-%s-%s-dataset.tsv.gz" \
@@ -73,12 +73,12 @@ def hydrate_ids(keys, mon):
                     get_and_save_data(df['tweet_id'].tolist())
                 except:
                     print 'An exception occurred', sys.exc_info()[1]
+            
+            # process dataset 3 for months after February
+            base_dir = "/home/zarif/projects/dataverse_files/"
+            path = base_dir + "coronavirus-through-27-May-2020-*.txt"
+            process_path(path)
     
-    # process dataset 3 for May
-    if mon == 5:
-        base_dir = "/home/zarif/projects/dataverse_files/"
-        path = base_dir + "coronavirus-through-27-May-2020-*.txt"
-        process_path(path)
 
 
 if __name__ == '__main__':
