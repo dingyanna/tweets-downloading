@@ -8,6 +8,7 @@ import calendar
 from twarc import Twarc
 import pandas as pd
 import multiprocessing
+import pandas
 
 # connect to database
 myclient = pymongo.MongoClient('mongodb://localhost:27017/')
@@ -80,8 +81,10 @@ def hydrate_ids(keys, mon):
             process_path(path)
     
 
+#if __name__ == '__main__':
+    
+    # open api_keys.txt
+    #with open('api_keys.txt') as f:
 
-if __name__ == '__main__':
 
-
-    print('Download complete...')
+    #print('Download complete...')
