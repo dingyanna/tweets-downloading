@@ -20,11 +20,28 @@ with open('api_keys.txt') as f:
     df = pd.read_csv(f, sep=",")
 api_keys = df.values.tolist()
 
-# set up the inputs to the concurrent processes
+# set up the array of inputs to the concurrent processes
+# use 12 keys and distribute tweets in 4 months evenly to these keys.
 # example: 
 #    args = [[key, secret key, token, secret token, month, start_day, end_day]]
-#args = [api_keys[i].append(i + 1, ) if i != 2 else continue \
-        for i in range(len(api_keys))]
+args = []
+for i in range(12):
+    month = i / 3
+    # adjust to the correct month, skipping February
+    if month == 0:
+        month += 1
+    else:
+        month += 2
+    last_day = calendar.monthrange(2020, mon)[1]
+    start = 1
+    end = 10
+    if i % 3 == 1:
+        start = 11
+        end = 20
+    elif i % 3 == 2:
+        start = 21
+        end = last_day
+    api_keys[i] += [month, start, end]
 
 def get_and_save_data(id_col, t):
     """
@@ -60,23 +77,19 @@ def get_date_str(num):
         return str(num)
 
 def hydrate_ids(args):
-    """
-    
-    """
     t = Twarc(args[0], args[1], args[2], args[3])
-    last_day = calendar.monthrange(2020, mon)[1]
 
     # process dataset 1
-    for day in range(1, last_day + 1):
+    for day in range(args[5], args[6] + 1):
         base_dir_A = "/home/zarif/projects/COVID-19-TweetIDs/"
-        mon_str = get_date_str(mon)
+        mon_str = get_date_str(args[4])
         day_str = get_date_str(day)
         path = base_dir_A + \
             "2020-%s/coronavirus-tweet-id-2020-%s-%s-*.txt" \
             % (mon_str, mon_str, day_str)
         process_path(path, t)
         
-        if mon > 2:
+        if args[4] > 2:
             # process dataset 2 for months after February
             base_dir_B = "/home/zarif/projects/covid19_twitter/"
             path = base_dir_B + \
@@ -90,14 +103,19 @@ def hydrate_ids(args):
                     print 'An exception occurred', sys.exc_info()[1]
             
     # process dataset 3 for months after February
-    if mon > 2:
-        base_dir = "/home/zarif/projects/dataverse_files/"
-        path = base_dir + "coronavirus-through-27-May-2020-*.txt"
+    mydict = {1: '0', 10: '2', 
+                11: '3', 20: '5', 
+                21: '6', 30: '9', 31: '9'}
+    base_dir = "/home/zarif/projects/dataverse_files/"
+    if args[4] > 2:
+        path = base_dir + "coronavirus-through-27-May-2020-%s[%s-%s].txt" \
+                % (str(args[4] - 3), mydict[args[5]], mydict[args[6]])
         process_path(path, t)
     
 
+
 if __name__ == '__main__':
-    p = Pool(10)
-    p.map(hydrate_ids, )
+    p = Pool(12)
+    p.map(hydrate_ids, args)
     p.close()
     p.join()
