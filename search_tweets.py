@@ -77,7 +77,7 @@ def get_date_str(num):
         return str(num)
 
 def hydrate_ids(args):
-    t = Twarc(args[0], args[1], args[2], args[3])
+    t = Twarc(args[0], args[1], args[2], args[3], app_auth=True)
 
     # process dataset 1
     for day in range(args[5], args[6] + 1):
